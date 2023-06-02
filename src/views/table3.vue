@@ -119,9 +119,10 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("http://localhost:8080/custom/get",{"username":localStorage.getItem("ms_username")})
+  request.get("https://www.atchain.cn:8004/custom/get",{"username":localStorage.getItem("ms_username")})
   .then((res) => {
-    tableData.value = res.data.data;
+    const data:any = res;
+    tableData.value = data.data.data;
     pageTotal.value = tableData.value.length;
   });
 };

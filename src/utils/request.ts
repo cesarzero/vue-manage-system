@@ -8,15 +8,15 @@ import qs from 'qs';
 //post请求头
 axios.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
  // @ts-ignore
-axios.defaults.headers.post["Authorization"] = localStorage.getItem("Authorization");
+
 // @ts-ignore
-axios.defaults.headers.get["Authorization"] = localStorage.getItem("Authorization");
 //允许跨域携带cookie信息
 axios.defaults.withCredentials = false;
 //设置超时
 const service:AxiosInstance = axios.create({
     timeout: 5000
 });
+
 axios.interceptors.request.use(
     config => {
         return config;
@@ -45,6 +45,8 @@ export default {
      * @returns Promise
      */
     post(url:string, data:object) {
+        // @ts-ignore
+        axios.defaults.headers.post["Authorization"] = localStorage.getItem("Authorization");
         return new Promise((resolve, reject) => {
             axios({
                 method: 'post',
@@ -61,6 +63,8 @@ export default {
     },
 
     get(url:string, data:object) {
+        // @ts-ignore
+        axios.defaults.headers.get["Authorization"] = localStorage.getItem("Authorization");
         return new Promise((resolve, reject) => {
             axios({
                 method: 'get',

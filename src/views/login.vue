@@ -32,13 +32,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { useTagsStore } from '../store/tags';
-import { usePermissStore } from '../store/permiss';
-import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import type { FormInstance, FormRules } from 'element-plus';
-import { Lock, User } from '@element-plus/icons-vue';
+import {reactive, ref} from 'vue';
+import {useTagsStore} from '../store/tags';
+import {usePermissStore} from '../store/permiss';
+import {useRouter} from 'vue-router';
+import type {FormInstance, FormRules} from 'element-plus';
+import {ElMessage} from 'element-plus';
+import {Lock, User} from '@element-plus/icons-vue';
 import request from "../utils/request";
 
 interface LoginInfo {
@@ -68,12 +68,13 @@ const submitForm = (formEl: FormInstance | undefined) => {
 	if (!formEl) return;
 	formEl.validate((valid: boolean) => {
 		if (valid) {
-      request.post("http://localhost:8080/login",{"username":param.username,"password":param.password})
+      request.post("https://www.atchain.cn:8004/login",{"username":param.username,"password":param.password})
       .then((res) => {
-        if(res.data.code == 200){
+        const data:any = res;
+        if(data.data.code == 200){
           ElMessage.success('登录成功');
           localStorage.setItem('ms_username', param.username);
-          localStorage.setItem('Authorization', res.headers.authorization);
+          localStorage.setItem('Authorization', data.headers.authorization);
           const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
           permiss.handleSet(keys);
           localStorage.setItem('ms_keys', JSON.stringify(keys));

@@ -119,9 +119,10 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("http://localhost:8080/project/all",{})
+  request.get("https://www.atchain.cn:8004/project/all",{})
   .then((res) => {
-    tableData.value = res.data.data;
+    const data:any = res;
+    tableData.value = data.data.data;
     pageTotal.value = tableData.value.length;
   });
 };
@@ -132,9 +133,10 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("http://localhost:8080/project/search",{"name":query.name})
+    request.get("https://www.atchain.cn:8004/project/search",{"name":query.name})
     .then((res) => {
-      tableData.value = res.data.data;
+      const data:any = res;
+      tableData.value = data.data.data;
     });
   }
 };
@@ -160,9 +162,10 @@ const handleDelete = (index: number) => {
 		type: 'warning'
 	})
 		.then(() => {
-      request.get("http://localhost:8080/project/del",{"id":tableData.value[index].id})
+      request.get("https://www.atchain.cn:8004/project/del",{"id":tableData.value[index].id})
       .then((res) => {
-        if(res.data.code == 200)
+        const data:any = res;
+        if(data.data.code == 200)
         {
           ElMessage.success("删除成功");
           getData();
@@ -186,17 +189,18 @@ const handleEdit = (index: number, row: any) => {
   EditorTips.value = "请输入连接";
   editVisible.value = true;
   ProjectValue.value = tableData.value[index].id;
-  ProjectName.value = tableData.value[index].name;
-  ProjectLink.value = tableData.value[index].address;
+  ProjectName.value = tableData.value[index].project.name;
+  ProjectLink.value = tableData.value[index].project.address;
 
   isEditorCustom.value = true;
 };
 const saveEdit = () => {
   if(EditorTitle.value=="编辑项目")
   {
-    request.post("http://localhost:8080/project/edit",{"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("https://www.atchain.cn:8004/project/edit",{"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
-      if(res.data.code == 200)
+      const data:any = res;
+      if(data.data.code == 200)
       {
         ElMessage.success("修改成功");
         editVisible.value = false;
@@ -207,9 +211,10 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("http://localhost:8080/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("https://www.atchain.cn:8004/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
-      if(res.data.code == 200)
+      const data:any = res;
+      if(data.data.code == 200)
       {
         ElMessage.success("添加成功");
         editVisible.value = false;

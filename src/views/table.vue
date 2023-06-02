@@ -137,14 +137,16 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("http://localhost:8080/custom/all",{})
+  request.get("https://www.atchain.cn:8004/custom/all",{})
   .then((res) => {
-    tableData.value = res.data.data;
+    const data:any = res;
+    tableData.value = data.data.data;
     pageTotal.value = tableData.value.length;
   });
-  request.get("http://localhost:8080/project/all",{})
+  request.get("https://www.atchain.cn:8004/project/all",{})
   .then((res) => {
-    ProjectData.value = res.data.data;
+    const data:any = res;
+    ProjectData.value = data.data.data;
   });
 };
 getData();
@@ -154,9 +156,10 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("http://localhost:8080/custom/search",{"username":query.name})
+    request.get("https://www.atchain.cn:8004/custom/search",{"username":query.name})
     .then((res) => {
-      tableData.value = res.data.data;
+      const data:any = res;
+      tableData.value = data.data.data;
     });
   }
 };
@@ -185,9 +188,10 @@ const handleDelete = (index: number) => {
 		type: 'warning'
 	})
 		.then(() => {
-      request.get("http://localhost:8080/custom/del",{"id":tableData.value[index].id})
+      request.get("https://www.atchain.cn:8004/custom/del",{"id":tableData.value[index].id})
       .then((res) => {
-        if(res.data.code == 200)
+        const data:any = res;
+        if(data.data.code == 200)
         {
           ElMessage.success("删除成功");
           getData();
@@ -218,9 +222,10 @@ const handleEdit = (index: number, row: any) => {
 const saveEdit = () => {
   if(EditorTitle.value=="编辑用户")
   {
-    request.post("http://localhost:8080/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value,"custom_id":CustomUserId.value})
+    request.post("https://www.atchain.cn:8004/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value,"custom_id":CustomUserId.value})
     .then((res) => {
-      if(res.data.code == 200)
+      const data:any = res;
+      if(data.data.code == 200)
       {
         ElMessage.success("修改成功");
         editVisible.value = false;
@@ -231,9 +236,10 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("http://localhost:8080/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value})
+    request.post("https://www.atchain.cn:8004/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value})
     .then((res) => {
-      if(res.data.code == 200)
+      const data:any = res;
+      if(data.data.code == 200)
       {
         ElMessage.success("添加成功");
         editVisible.value = false;

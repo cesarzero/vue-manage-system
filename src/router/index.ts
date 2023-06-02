@@ -181,14 +181,22 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | vue-manage-system`;
+    document.title = `${to.meta.title} | 后台管理系统`;
     const role = localStorage.getItem('ms_username');
     const permiss = usePermissStore();
     if (!role && to.path !== '/login') {
         next('/login');
     } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
         // 如果没有权限，则进入403
-        next('/403');
+        // next('/403');
+        if(role=="admin")
+        {
+            next('/table')
+        }
+        else
+        {
+            next("/table3")
+        }
     } else {
         next();
     }
