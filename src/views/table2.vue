@@ -6,7 +6,7 @@
 <!--					<el-option key="1" label="广东省" value="广东省"></el-option>-->
 <!--					<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
 <!--				</el-select>-->
-				<el-input v-model="query.name" placeholder="请输入用户名搜索" class="handle-input mr10"></el-input>
+				<el-input v-model="query.name" placeholder="请输入项目名搜索" class="handle-input mr10"></el-input>
 				<el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
 				<el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
 			</div>

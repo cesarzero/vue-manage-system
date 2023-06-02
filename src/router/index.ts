@@ -46,7 +46,7 @@ const routes: RouteRecordRaw[] = [
                     title: '我的项目',
                     permiss: '3',
                 },
-                component: () => import(/* webpackChunkName: "table" */ '../views/table2.vue'),
+                component: () => import(/* webpackChunkName: "table" */ '../views/table3.vue'),
             },
             {
                 path: '/charts',

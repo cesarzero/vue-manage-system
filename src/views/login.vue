@@ -77,7 +77,13 @@ const submitForm = (formEl: FormInstance | undefined) => {
           const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
           permiss.handleSet(keys);
           localStorage.setItem('ms_keys', JSON.stringify(keys));
-          router.push('/');
+          if(param.username == 'admin')
+          {
+            router.push('/table');
+          }else
+          {
+            router.push('/table3');
+          }
         }else{
           ElMessage.error("登录失败，账号或密码错误");
         }

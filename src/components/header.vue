@@ -34,7 +34,7 @@
 							<a href="https://www.atchain.com" target="_blank">
 								<el-dropdown-item>ATCHAIN</el-dropdown-item>
 							</a>
-							<el-dropdown-item command="user">个人中心</el-dropdown-item>
+<!--							<el-dropdown-item command="user">个人中心</el-dropdown-item>-->
 							<el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
 						</el-dropdown-menu>
 					</template>

@@ -6,13 +6,13 @@
 <!--					<el-option key="1" label="广东省" value="广东省"></el-option>-->
 <!--					<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
 <!--				</el-select>-->
-				<el-input v-model="query.name" placeholder="请输入用户名搜索" class="handle-input mr10"></el-input>
-				<el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
-				<el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
+<!--				<el-input v-model="query.name" placeholder="请输入用户名搜索" class="handle-input mr10"></el-input>-->
+<!--				<el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>-->
+<!--				<el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>-->
 			</div>
 			<el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
 				<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-				<el-table-column prop="name" label="项目名称" align="center"></el-table-column>
+				<el-table-column prop="project.name" label="项目名称" align="center"></el-table-column>
 <!--				<el-table-column label="账户余额">-->
 <!--					<template #default="scope">￥{{ scope.row.money }}</template>-->
 <!--				</el-table-column>-->
@@ -30,19 +30,21 @@
 <!--				</el-table-column>-->
         <el-table-column prop="address" label="云渲染链接" align="center">
           <template #default="scope">
-            <a :href="scope.row.address" target="_blank">{{scope.row.address}}</a>
+            <el-button type="primary" :icon="ChromeFilled" @click="handleEdit(scope.$index, scope.row)">
+              打开链接
+            </el-button>
           </template>
         </el-table-column>
-				<el-table-column label="操作" width="220" align="center">
-					<template #default="scope">
-						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">
-							编辑
-						</el-button>
-						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.$index)" v-permiss="16">
-							删除
-						</el-button>
-					</template>
-				</el-table-column>
+<!--				<el-table-column label="操作" width="220" align="center">-->
+<!--					<template #default="scope">-->
+<!--						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">-->
+<!--							编辑-->
+<!--						</el-button>-->
+<!--						<el-button text :icon="Delete" class="red" @click="handleDelete(scope.$index)" v-permiss="16">-->
+<!--							删除-->
+<!--						</el-button>-->
+<!--					</template>-->
+<!--				</el-table-column>-->
 			</el-table>
 			<div class="pagination">
 				<el-pagination
@@ -57,29 +59,29 @@
 		</div>
 
 		<!-- 编辑弹出框 -->
-		<el-dialog v-bind:title="EditorTitle" v-model="editVisible" width="25%">
-			<el-form label-width="70px">
-				<el-form-item label="项目名称">
-					<el-input v-model="ProjectName" placeholder="请输入项目名称" :disabled="isEditorCustom"></el-input>
-				</el-form-item>
-        <el-form-item label="项目链接">
-          <el-input v-model="ProjectLink" :placeholder="EditorTips"></el-input>
-        </el-form-item>
-			</el-form>
-			<template #footer>
-				<span class="dialog-footer">
-					<el-button @click="editVisible = false">取 消</el-button>
-					<el-button type="primary" @click="saveEdit">确 定</el-button>
-				</span>
-			</template>
-		</el-dialog>
+<!--		<el-dialog v-bind:title="EditorTitle" v-model="editVisible" width="25%">-->
+<!--			<el-form label-width="70px">-->
+<!--				<el-form-item label="项目名称">-->
+<!--					<el-input v-model="ProjectName" placeholder="请输入项目名称" :disabled="isEditorCustom"></el-input>-->
+<!--				</el-form-item>-->
+<!--        <el-form-item label="项目链接">-->
+<!--          <el-input v-model="ProjectLink" :placeholder="EditorTips"></el-input>-->
+<!--        </el-form-item>-->
+<!--			</el-form>-->
+<!--			<template #footer>-->
+<!--				<span class="dialog-footer">-->
+<!--					<el-button @click="editVisible = false">取 消</el-button>-->
+<!--					<el-button type="primary" @click="saveEdit">确 定</el-button>-->
+<!--				</span>-->
+<!--			</template>-->
+<!--		</el-dialog>-->
 	</div>
 </template>
 
 <script setup lang="ts" name="basetable">
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
+import { ChromeFilled } from '@element-plus/icons-vue';
 import request from "../utils/request";
 
 interface TableItem {
@@ -107,71 +109,28 @@ const query = reactive({
 	pageSize: 10
 });
 const tableData = ref<TableItem[]>([]);
-const ProjectData = ref<ProjectItem[]>([]);
 const pageTotal = ref(0);
 const EditorTitle = ref("")
 const EditorTips = ref("")
 const ProjectValue = ref('')
 const ProjectName = ref('')
 const ProjectLink = ref('')
-const CustomPassWord = ref('')
 const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("http://localhost:8080/project/all",{})
+  request.get("http://localhost:8080/custom/get",{"username":localStorage.getItem("ms_username")})
   .then((res) => {
     tableData.value = res.data.data;
     pageTotal.value = tableData.value.length;
   });
 };
 getData();
-// 查询操作
-const handleSearch = () => {
-  if(query.name == "")
-  {
-    getData();
-  }else {
-    request.get("http://localhost:8080/project/search",{"name":query.name})
-    .then((res) => {
-      tableData.value = res.data.data;
-    });
-  }
-};
 
-//新增操作
-const handleAdd = () => {
-  editVisible.value = true;
-  EditorTitle.value = "新增项目";
-  EditorTips.value = "请输入项目连接";
-  ProjectValue.value = "";
-  isEditorCustom.value = false;
-};
 // 分页导航
 const handlePageChange = (val: number) => {
 	query.pageIndex = val;
 	getData();
-};
-
-// 删除操作
-const handleDelete = (index: number) => {
-	// 二次确认删除
-	ElMessageBox.confirm('确定要删除吗？', '提示', {
-		type: 'warning'
-	})
-		.then(() => {
-      request.get("http://localhost:8080/project/del",{"id":tableData.value[index].id})
-      .then((res) => {
-        if(res.data.code == 200)
-        {
-          ElMessage.success("删除成功");
-          getData();
-        }else{
-          ElMessage.error("删除失败");
-        }
-      });
-		})
-		.catch(() => {});
 };
 
 // 表格编辑时弹窗和保存
@@ -182,44 +141,7 @@ let form = reactive({
 });
 let idx: number = -1;
 const handleEdit = (index: number, row: any) => {
-  EditorTitle.value = "编辑项目";
-  EditorTips.value = "请输入连接";
-  editVisible.value = true;
-  ProjectValue.value = tableData.value[index].id;
-  ProjectName.value = tableData.value[index].name;
-  ProjectLink.value = tableData.value[index].address;
-
-  isEditorCustom.value = true;
-};
-const saveEdit = () => {
-  if(EditorTitle.value=="编辑项目")
-  {
-    request.post("http://localhost:8080/project/edit",{"name":ProjectName.value,"link":ProjectLink.value})
-    .then((res) => {
-      if(res.data.code == 200)
-      {
-        ElMessage.success("修改成功");
-        editVisible.value = false;
-        getData();
-      }else{
-        ElMessage.error("项目修改失败");
-      }
-    });
-  }else
-  {
-    request.post("http://localhost:8080/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
-    .then((res) => {
-      if(res.data.code == 200)
-      {
-        ElMessage.success("添加成功");
-        editVisible.value = false;
-        getData();
-      }else{
-        ElMessage.error("项目添加失败，请检查是否有重名项目");
-      }
-    });
-
-  }
+  window.open(tableData.value[index].project.address)
 };
 </script>
 
