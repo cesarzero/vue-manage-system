@@ -1,31 +1,78 @@
-import axios, {AxiosInstance, AxiosError, AxiosResponse, AxiosRequestConfig} from 'axios';
+import axios, {AxiosInstance} from "axios";
+// @ts-ignore
+import qs from 'qs';
 
+ axios.defaults.baseURL = ''  //正式
+//axios.defaults.baseURL = 'http://localhost:8080' //测试
+
+//post请求头
+axios.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
+ // @ts-ignore
+axios.defaults.headers.post["Authorization"] = localStorage.getItem("Authorization");
+// @ts-ignore
+axios.defaults.headers.get["Authorization"] = localStorage.getItem("Authorization");
+//允许跨域携带cookie信息
+axios.defaults.withCredentials = false;
+//设置超时
 const service:AxiosInstance = axios.create({
     timeout: 5000
 });
-
-service.interceptors.request.use(
-    (config: AxiosRequestConfig) => {
+axios.interceptors.request.use(
+    config => {
         return config;
     },
-    (error: AxiosError) => {
-        console.log(error);
-        return Promise.reject();
+    error => {
+        return Promise.reject(error);
     }
 );
 
-service.interceptors.response.use(
-    (response: AxiosResponse) => {
+axios.interceptors.response.use(
+    response => {
         if (response.status === 200) {
-            return response;
+            return Promise.resolve(response);
         } else {
-            Promise.reject();
+            return Promise.reject(response);
         }
     },
-    (error: AxiosError) => {
-        console.log(error);
-        return Promise.reject();
+    error => {
+        console.log(JSON.stringify(error));
     }
 );
+export default {
+    /**
+     * @param {String} url
+     * @param {Object} data
+     * @returns Promise
+     */
+    post(url:string, data:object) {
+        return new Promise((resolve, reject) => {
+            axios({
+                method: 'post',
+                url,
+                data: qs.stringify(data),
+            })
+                .then(res => {
+                    resolve(res)
+                })
+                .catch(err => {
+                    reject(err)
+                });
+        })
+    },
 
-export default service;
+    get(url:string, data:object) {
+        return new Promise((resolve, reject) => {
+            axios({
+                method: 'get',
+                url,
+                params: data,
+            })
+                .then(res => {
+                    resolve(res)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+    }
+};

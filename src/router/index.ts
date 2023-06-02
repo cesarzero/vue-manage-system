@@ -25,10 +25,28 @@ const routes: RouteRecordRaw[] = [
                 path: '/table',
                 name: 'basetable',
                 meta: {
-                    title: '表格',
+                    title: '客户管理',
                     permiss: '2',
                 },
                 component: () => import(/* webpackChunkName: "table" */ '../views/table.vue'),
+            },
+            {
+                path: '/table2',
+                name: 'basetable2',
+                meta: {
+                    title: '项目管理',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/table2.vue'),
+            },
+            {
+                path: '/table3',
+                name: 'basetable3',
+                meta: {
+                    title: '我的项目',
+                    permiss: '3',
+                },
+                component: () => import(/* webpackChunkName: "table" */ '../views/table2.vue'),
             },
             {
                 path: '/charts',

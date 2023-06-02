@@ -6,13 +6,13 @@
 <!--					<el-option key="1" label="广东省" value="广东省"></el-option>-->
 <!--					<el-option key="2" label="湖南省" value="湖南省"></el-option>-->
 <!--				</el-select>-->
-				<el-input v-model="query.name" placeholder="用户名" class="handle-input mr10"></el-input>
+				<el-input v-model="query.name" placeholder="请输入用户名搜索" class="handle-input mr10"></el-input>
 				<el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
 				<el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
 			</div>
 			<el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
 				<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-				<el-table-column prop="username" label="用户名" align="center"></el-table-column>
+				<el-table-column prop="name" label="项目名称" align="center"></el-table-column>
 <!--				<el-table-column label="账户余额">-->
 <!--					<template #default="scope">￥{{ scope.row.money }}</template>-->
 <!--				</el-table-column>-->
@@ -28,18 +28,11 @@
 <!--						</el-image>-->
 <!--					</template>-->
 <!--				</el-table-column>-->
-        <el-table-column prop="project.name" label="所属项目" align="center"></el-table-column>
-				<el-table-column label="状态" align="center">
-					<template #default="scope">
-						<el-tag
-							:type="scope.row.state === '正常' ? 'success' : scope.row.state === '未启用' ? 'danger' : ''"
-						>
-							{{ scope.row.state }}
-						</el-tag>
-					</template>
-				</el-table-column>
-
-        <el-table-column prop="register_date" label="注册时间" align="center"></el-table-column>
+        <el-table-column prop="address" label="云渲染链接" align="center">
+          <template #default="scope">
+            <a :href="scope.row.address" target="_blank">{{scope.row.address}}</a>
+          </template>
+        </el-table-column>
 				<el-table-column label="操作" width="220" align="center">
 					<template #default="scope">
 						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">
@@ -66,21 +59,11 @@
 		<!-- 编辑弹出框 -->
 		<el-dialog v-bind:title="EditorTitle" v-model="editVisible" width="25%">
 			<el-form label-width="70px">
-				<el-form-item label="用户名">
-					<el-input v-model="CustomUserName" placeholder="请输入用户名搜索" :disabled="isEditorCustom"></el-input>
+				<el-form-item label="项目名称">
+					<el-input v-model="ProjectName" placeholder="请输入项目名称" :disabled="isEditorCustom"></el-input>
 				</el-form-item>
-        <el-form-item label="用户密码">
-          <el-input type="password" v-model="CustomPassWord" :placeholder="EditorTips"></el-input>
-        </el-form-item>
-        <el-form-item label="所属项目">
-          <el-select v-model="ProjectValue" class="m-2" placeholder="Select" size="large" >
-            <el-option
-                v-for="item in ProjectData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-            />
-          </el-select>
+        <el-form-item label="项目链接">
+          <el-input v-model="ProjectLink" :placeholder="EditorTips"></el-input>
         </el-form-item>
 			</el-form>
 			<template #footer>
@@ -97,7 +80,6 @@
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
-import { fetchData } from '../api/index';
 import request from "../utils/request";
 
 interface TableItem {
@@ -130,21 +112,17 @@ const pageTotal = ref(0);
 const EditorTitle = ref("")
 const EditorTips = ref("")
 const ProjectValue = ref('')
-const CustomUserName = ref('')
-const CustomUserId = ref('')
+const ProjectName = ref('')
+const ProjectLink = ref('')
 const CustomPassWord = ref('')
 const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("http://localhost:8080/custom/all",{})
+  request.get("http://localhost:8080/project/all",{})
   .then((res) => {
     tableData.value = res.data.data;
     pageTotal.value = tableData.value.length;
-  });
-  request.get("http://localhost:8080/project/all",{})
-  .then((res) => {
-    ProjectData.value = res.data.data;
   });
 };
 getData();
@@ -154,7 +132,7 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("http://localhost:8080/custom/search",{"username":query.name})
+    request.get("http://localhost:8080/project/search",{"name":query.name})
     .then((res) => {
       tableData.value = res.data.data;
     });
@@ -164,11 +142,8 @@ const handleSearch = () => {
 //新增操作
 const handleAdd = () => {
   editVisible.value = true;
-  EditorTitle.value = "新增用户";
-  EditorTips.value = "请输入密码";
-  CustomUserName.value = "";
-  CustomPassWord.value = "";
-  CustomUserId.value = "";
+  EditorTitle.value = "新增项目";
+  EditorTips.value = "请输入项目连接";
   ProjectValue.value = "";
   isEditorCustom.value = false;
 };
@@ -185,7 +160,7 @@ const handleDelete = (index: number) => {
 		type: 'warning'
 	})
 		.then(() => {
-      request.get("http://localhost:8080/custom/del",{"id":tableData.value[index].id})
+      request.get("http://localhost:8080/project/del",{"id":tableData.value[index].id})
       .then((res) => {
         if(res.data.code == 200)
         {
@@ -207,18 +182,19 @@ let form = reactive({
 });
 let idx: number = -1;
 const handleEdit = (index: number, row: any) => {
-  EditorTitle.value = "编辑用户";
-  EditorTips.value = "保持原密码请留空";
+  EditorTitle.value = "编辑项目";
+  EditorTips.value = "请输入连接";
   editVisible.value = true;
-  CustomUserName.value =  tableData.value[index].username;
-  ProjectValue.value = tableData.value[index].project.id;
-  CustomUserId.value = tableData.value[index].id;
+  ProjectValue.value = tableData.value[index].id;
+  ProjectName.value = tableData.value[index].name;
+  ProjectLink.value = tableData.value[index].address;
+
   isEditorCustom.value = true;
 };
 const saveEdit = () => {
-  if(EditorTitle.value=="编辑用户")
+  if(EditorTitle.value=="编辑项目")
   {
-    request.post("http://localhost:8080/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value,"custom_id":CustomUserId.value})
+    request.post("http://localhost:8080/project/edit",{"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
       if(res.data.code == 200)
       {
@@ -226,12 +202,12 @@ const saveEdit = () => {
         editVisible.value = false;
         getData();
       }else{
-        ElMessage.error("用户修改失败,可能存在同名用户");
+        ElMessage.error("项目修改失败");
       }
     });
   }else
   {
-    request.post("http://localhost:8080/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value})
+    request.post("http://localhost:8080/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
       if(res.data.code == 200)
       {
@@ -239,7 +215,7 @@ const saveEdit = () => {
         editVisible.value = false;
         getData();
       }else{
-        ElMessage.error("用户添加失败，请检查是否有重名账户");
+        ElMessage.error("项目添加失败，请检查是否有重名项目");
       }
     });
 

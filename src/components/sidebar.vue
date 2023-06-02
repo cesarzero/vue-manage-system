@@ -65,32 +65,43 @@ const items = [
     {
         icon: 'Calendar',
         index: '1',
-        title: '表格相关',
+        title: '项目管理',
         permiss: '2',
         subs: [
             {
                 index: '/table',
-                title: '常用表格',
+                title: '用户列表',
                 permiss: '2',
             },
             {
-                index: '/import',
-                title: '导入Excel',
-                permiss: '2',
+              index: '/table2',
+              title: '项目列表',
+              permiss: '2',
             },
-            {
-                index: '/export',
-                title: '导出Excel',
-                permiss: '2',
-            },
+            // {
+            //     index: '/import',
+            //     title: '导入Excel',
+            //     permiss: '2',
+            // },
+            // {
+            //     index: '/export',
+            //     title: '导出Excel',
+            //     permiss: '2',
+            // },
         ],
     },
     {
         icon: 'DocumentCopy',
-        index: '/tabs',
-        title: 'tab选项卡',
+        index: '/table3',
+        title: '我的项目',
         permiss: '3',
     },
+    // {
+    //     icon: 'DocumentCopy',
+    //     index: '/tabs',
+    //     title: 'tab选项卡',
+    //     permiss: '3',
+    // },
     {
         icon: 'Edit',
         index: '3',
