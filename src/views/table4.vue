@@ -181,22 +181,12 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("/custom/all",{})
+  request.get("/custom/manage/all",{"username":localStorage.getItem("ms_username")})
   .then((res) => {
     const data:any = res;
     tableData.value = data.data.data;
+    console.log(data.data.data)
     pageTotal.value = tableData.value.length;
-    console.log(tableData.value)
-  });
-  request.get("/project/all",{})
-  .then((res) => {
-    const data:any = res;
-    ProjectData.value = data.data.data;
-  });
-  request.get("/role/all",{})
-  .then((res) => {
-    const data:any = res;
-    RoleData.value = data.data.data;
   });
 };
 getData();

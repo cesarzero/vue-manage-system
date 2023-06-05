@@ -96,47 +96,53 @@ const items = [
         title: '我的项目',
         permiss: '3',
     },
+    {
+      icon: 'DocumentCopy',
+      index: '/table4',
+      title: '用户管理',
+      permiss: '4',
+    },
     // {
     //     icon: 'DocumentCopy',
     //     index: '/tabs',
     //     title: 'tab选项卡',
     //     permiss: '3',
     // },
-    {
-        icon: 'Edit',
-        index: '3',
-        title: '表单相关',
-        permiss: '4',
-        subs: [
-            {
-                index: '/form',
-                title: '基本表单',
-                permiss: '5',
-            },
-            {
-                index: '/upload',
-                title: '文件上传',
-                permiss: '6',
-            },
-            {
-                index: '4',
-                title: '三级菜单',
-                permiss: '7',
-                subs: [
-                    {
-                        index: '/editor',
-                        title: '富文本编辑器',
-                        permiss: '8',
-                    },
-                    {
-                        index: '/markdown',
-                        title: 'markdown编辑器',
-                        permiss: '9',
-                    },
-                ],
-            },
-        ],
-    },
+    // {
+    //     icon: 'Edit',
+    //     index: '3',
+    //     title: '表单相关',
+    //     permiss: '4',
+    //     subs: [
+    //         {
+    //             index: '/form',
+    //             title: '基本表单',
+    //             permiss: '5',
+    //         },
+    //         {
+    //             index: '/upload',
+    //             title: '文件上传',
+    //             permiss: '6',
+    //         },
+    //         {
+    //             index: '4',
+    //             title: '三级菜单',
+    //             permiss: '7',
+    //             subs: [
+    //                 {
+    //                     index: '/editor',
+    //                     title: '富文本编辑器',
+    //                     permiss: '8',
+    //                 },
+    //                 {
+    //                     index: '/markdown',
+    //                     title: 'markdown编辑器',
+    //                     permiss: '9',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    // },
     {
         icon: 'Setting',
         index: '/icon',

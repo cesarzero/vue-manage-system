@@ -85,12 +85,9 @@ import { ChromeFilled } from '@element-plus/icons-vue';
 import request from "../utils/request";
 
 interface TableItem {
-	id: string;
-  username: string;
-	state: string;
-  register_date: string;
-	project:{
-    id:string
+  id:string
+  project:{
+    id:string,
     name:string,
     address:string
   }
@@ -122,7 +119,7 @@ const getData = () => {
   request.get("/custom/get",{"username":localStorage.getItem("ms_username")})
   .then((res) => {
     const data:any = res;
-    tableData.value = data.data.data;
+    tableData.value = data.data.data.customProjects;
     pageTotal.value = tableData.value.length;
   });
 };

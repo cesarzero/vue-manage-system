@@ -75,7 +75,15 @@ const submitForm = (formEl: FormInstance | undefined) => {
           ElMessage.success('登录成功');
           localStorage.setItem('ms_username', param.username);
           localStorage.setItem('Authorization', data.headers.authorization);
-          const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
+          let role  = "";
+          if(data.data.data == '项目管理员'){
+            role = 'manage';
+          }else if(data.data.data == '普通用户'){
+            role = 'user';
+          }else{
+            role = 'admin';
+          }
+          const keys = permiss.defaultList[role];
           permiss.handleSet(keys);
           localStorage.setItem('ms_keys', JSON.stringify(keys));
           if(param.username == 'admin')
