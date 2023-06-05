@@ -10,7 +10,7 @@
 				<el-button type="primary" :icon="Search" @click="handleSearch">搜索</el-button>
 				<el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
 			</div>
-			<el-table :data="tableData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+			<el-table :data="ProjectData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
 				<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
 				<el-table-column prop="name" label="项目名称" align="center"></el-table-column>
 <!--				<el-table-column label="账户余额">-->
@@ -60,7 +60,7 @@
 		<el-dialog v-bind:title="EditorTitle" v-model="editVisible" width="25%">
 			<el-form label-width="70px">
 				<el-form-item label="项目名称">
-					<el-input v-model="ProjectName" placeholder="请输入项目名称" :disabled="isEditorCustom"></el-input>
+					<el-input v-model="ProjectName" placeholder="请输入项目名称"></el-input>
 				</el-form-item>
         <el-form-item label="项目链接">
           <el-input v-model="ProjectLink" :placeholder="EditorTips"></el-input>
@@ -82,17 +82,6 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
 import request from "../utils/request";
 
-interface TableItem {
-	id: string;
-  username: string;
-	state: string;
-  register_date: string;
-	project:{
-    id:string
-    name:string,
-    address:string
-  }
-}
 
 interface ProjectItem {
   id:string
@@ -106,7 +95,6 @@ const query = reactive({
 	pageIndex: 1,
 	pageSize: 10
 });
-const tableData = ref<TableItem[]>([]);
 const ProjectData = ref<ProjectItem[]>([]);
 const pageTotal = ref(0);
 const EditorTitle = ref("")
@@ -114,16 +102,16 @@ const EditorTips = ref("")
 const ProjectValue = ref('')
 const ProjectName = ref('')
 const ProjectLink = ref('')
-const CustomPassWord = ref('')
+const ProjectID = ref('')
 const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("https://www.atchain.cn:8004/project/all",{})
+  request.get("/project/all",{})
   .then((res) => {
     const data:any = res;
-    tableData.value = data.data.data;
-    pageTotal.value = tableData.value.length;
+    ProjectData.value = data.data.data;
+    pageTotal.value = ProjectData.value.length;
   });
 };
 getData();
@@ -133,10 +121,10 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("https://www.atchain.cn:8004/project/search",{"name":query.name})
+    request.get("/project/search",{"name":query.name})
     .then((res) => {
       const data:any = res;
-      tableData.value = data.data.data;
+      ProjectData.value = data.data.data;
     });
   }
 };
@@ -148,6 +136,7 @@ const handleAdd = () => {
   EditorTips.value = "请输入项目连接";
   ProjectValue.value = "";
   isEditorCustom.value = false;
+  ProjectID.value = "";
 };
 // 分页导航
 const handlePageChange = (val: number) => {
@@ -158,11 +147,11 @@ const handlePageChange = (val: number) => {
 // 删除操作
 const handleDelete = (index: number) => {
 	// 二次确认删除
-	ElMessageBox.confirm('确定要删除吗？', '提示', {
+	ElMessageBox.confirm('该操作会关联删除用户下的项目信息，请二次确认', '提示', {
 		type: 'warning'
 	})
 		.then(() => {
-      request.get("https://www.atchain.cn:8004/project/del",{"id":tableData.value[index].id})
+      request.get("/project/del",{"id":ProjectData.value[index].id})
       .then((res) => {
         const data:any = res;
         if(data.data.code == 200)
@@ -188,16 +177,15 @@ const handleEdit = (index: number, row: any) => {
   EditorTitle.value = "编辑项目";
   EditorTips.value = "请输入连接";
   editVisible.value = true;
-  ProjectValue.value = tableData.value[index].id;
-  ProjectName.value = tableData.value[index].project.name;
-  ProjectLink.value = tableData.value[index].project.address;
-
+  ProjectName.value = ProjectData.value[index].name;
+  ProjectLink.value = ProjectData.value[index].address;
   isEditorCustom.value = true;
+  ProjectID.value = ProjectData.value[index].id;
 };
 const saveEdit = () => {
   if(EditorTitle.value=="编辑项目")
   {
-    request.post("https://www.atchain.cn:8004/project/edit",{"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("/project/edit",{"id":ProjectID.value,"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
@@ -211,7 +199,7 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("https://www.atchain.cn:8004/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)

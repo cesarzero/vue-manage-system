@@ -28,7 +28,15 @@
 <!--						</el-image>-->
 <!--					</template>-->
 <!--				</el-table-column>-->
-        <el-table-column prop="project.name" label="所属项目" align="center"></el-table-column>
+        <el-table-column label="所属项目" align="center" prop="customProjects">
+          <template #default="{row}">
+            <span v-for="cp in row.customProjects" :key="cp.id">
+              [{{cp.project.name}}]
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="账号级别" align="center" prop="role.name">
+        </el-table-column>
 				<el-table-column label="状态" align="center">
 					<template #default="scope">
 						<el-tag
@@ -73,9 +81,19 @@
           <el-input type="password" v-model="CustomPassWord" :placeholder="EditorTips"></el-input>
         </el-form-item>
         <el-form-item label="所属项目">
-          <el-select v-model="ProjectValue" class="m-2" placeholder="Select" size="large" >
+          <el-select v-model="ProjectValue" multiple class="m-2" placeholder="请选择项目" size="large" style="width: 380px">
             <el-option
                 v-for="item in ProjectData"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="权限赋予">
+          <el-select v-model="ProjectRole" class="m-2" placeholder="请选择权限" size="large" style="width: 380px">
+            <el-option
+                v-for="item in RoleData"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
@@ -105,10 +123,19 @@ interface TableItem {
   username: string;
 	state: string;
   register_date: string;
-	project:{
-    id:string
-    name:string,
-    address:string
+  customProjects:[
+    {
+      id:string,
+      project:{
+        id:string,
+        name:string,
+        address:string
+      }
+    }
+  ],
+  role:{
+    id:string,
+    name:string
   }
 }
 
@@ -116,6 +143,11 @@ interface ProjectItem {
   id:string
   name:string,
   address:string
+}
+
+interface RoleItem {
+  id:string
+  name:string,
 }
 
 const query = reactive({
@@ -126,27 +158,36 @@ const query = reactive({
 });
 const tableData = ref<TableItem[]>([]);
 const ProjectData = ref<ProjectItem[]>([]);
+const RoleData = ref<RoleItem[]>([]);
 const pageTotal = ref(0);
 const EditorTitle = ref("")
 const EditorTips = ref("")
-const ProjectValue = ref('')
+const ProjectValue = ref([])
+const ProjectRole = ref('')
 const CustomUserName = ref('')
+const CustomRoleName = ref('')
 const CustomUserId = ref('')
 const CustomPassWord = ref('')
 const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("https://www.atchain.cn:8004/custom/all",{})
+  request.get("/custom/all",{})
   .then((res) => {
     const data:any = res;
     tableData.value = data.data.data;
     pageTotal.value = tableData.value.length;
+    console.log(tableData.value)
   });
-  request.get("https://www.atchain.cn:8004/project/all",{})
+  request.get("/project/all",{})
   .then((res) => {
     const data:any = res;
     ProjectData.value = data.data.data;
+  });
+  request.get("/role/all",{})
+  .then((res) => {
+    const data:any = res;
+    RoleData.value = data.data.data;
   });
 };
 getData();
@@ -156,7 +197,7 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("https://www.atchain.cn:8004/custom/search",{"username":query.name})
+    request.get("/custom/search",{"username":query.name})
     .then((res) => {
       const data:any = res;
       tableData.value = data.data.data;
@@ -172,8 +213,10 @@ const handleAdd = () => {
   CustomUserName.value = "";
   CustomPassWord.value = "";
   CustomUserId.value = "";
-  ProjectValue.value = "";
+  ProjectValue.value = [];
   isEditorCustom.value = false;
+  ProjectRole.value = "";
+  CustomRoleName.value = "";
 };
 // 分页导航
 const handlePageChange = (val: number) => {
@@ -188,7 +231,7 @@ const handleDelete = (index: number) => {
 		type: 'warning'
 	})
 		.then(() => {
-      request.get("https://www.atchain.cn:8004/custom/del",{"id":tableData.value[index].id})
+      request.get("/custom/del",{"id":tableData.value[index].id})
       .then((res) => {
         const data:any = res;
         if(data.data.code == 200)
@@ -215,14 +258,20 @@ const handleEdit = (index: number, row: any) => {
   EditorTips.value = "保持原密码请留空";
   editVisible.value = true;
   CustomUserName.value =  tableData.value[index].username;
-  ProjectValue.value = tableData.value[index].project.id;
+
   CustomUserId.value = tableData.value[index].id;
   isEditorCustom.value = true;
+  const TempProjectValue:any = ref([]);
+  for(let i=0;i<tableData.value[index].customProjects.length;i++){
+    TempProjectValue.value.push(tableData.value[index].customProjects[i].project.id);
+  }
+  ProjectValue.value = TempProjectValue.value;
+  ProjectRole.value = tableData.value[index].role.name;
 };
 const saveEdit = () => {
   if(EditorTitle.value=="编辑用户")
   {
-    request.post("https://www.atchain.cn:8004/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value,"custom_id":CustomUserId.value})
+    request.post("/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"custom_id":CustomUserId.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
@@ -236,7 +285,7 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("https://www.atchain.cn:8004/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value})
+    request.post("/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"role":ProjectRole.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
@@ -248,7 +297,6 @@ const saveEdit = () => {
         ElMessage.error("用户添加失败，请检查是否有重名账户");
       }
     });
-
   }
 };
 </script>

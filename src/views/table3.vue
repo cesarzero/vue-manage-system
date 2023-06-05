@@ -119,7 +119,7 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("https://www.atchain.cn:8004/custom/get",{"username":localStorage.getItem("ms_username")})
+  request.get("/custom/get",{"username":localStorage.getItem("ms_username")})
   .then((res) => {
     const data:any = res;
     tableData.value = data.data.data;

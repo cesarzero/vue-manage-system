@@ -68,7 +68,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
 	if (!formEl) return;
 	formEl.validate((valid: boolean) => {
 		if (valid) {
-      request.post("https://www.atchain.cn:8004/login",{"username":param.username,"password":param.password})
+      request.post("/login",{"username":param.username,"password":param.password})
       .then((res) => {
         const data:any = res;
         if(data.data.code == 200){
