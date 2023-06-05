@@ -98,16 +98,6 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="权限赋予">
-          <el-select v-model="ProjectRole" class="m-2" placeholder="请选择权限" size="large" style="width: 380px">
-            <el-option
-                v-for="item in RoleData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
 			</el-form>
 			<template #footer>
 				<span class="dialog-footer">
@@ -172,7 +162,7 @@ const EditorTitle = ref("")
 const EditorTips = ref("")
 const ProjectValue = ref([])
 const SearchProject = ref([])
-const ProjectRole = ref('')
+const ProjectRole = ref('2')
 const CustomUserName = ref('')
 const CustomRoleName = ref('')
 const CustomUserId = ref('')
@@ -185,7 +175,12 @@ const getData = () => {
   .then((res) => {
     const data:any = res;
     tableData.value = data.data.data;
-    console.log(data.data.data)
+    pageTotal.value = tableData.value.length;
+  });
+  request.get("/project/manage/all",{"username":localStorage.getItem("ms_username")})
+  .then((res) => {
+    const data:any = res;
+    ProjectData.value = data.data.data;
     pageTotal.value = tableData.value.length;
   });
 };
@@ -196,18 +191,18 @@ const handleSearch = () => {
   {
     getData();
   }else {
-    request.get("/custom/search",{"username":query.name})
-    .then((res) => {
-      const data:any = res;
-      tableData.value = data.data.data;
-    });
+    // request.get("/custom/manage/search",{"username":query.name,"name":localStorage.getItem("ms_username")})
+    // .then((res) => {
+    //   const data:any = res;
+    //   tableData.value = data.data.data;
+    // });
   }
 };
 
 const handleTypeSearch = (val:string) => {
   if(val != "")
   {
-    request.get("/cp/search",{"id":val})
+    request.get("/cp/manage/search",{"id":val,"username":localStorage.getItem("ms_username")})
     .then((res) => {
       const data:any = res;
       tableData.value = data.data.data;
@@ -228,7 +223,7 @@ const handleAdd = () => {
   CustomUserId.value = "";
   ProjectValue.value = [];
   isEditorCustom.value = false;
-  ProjectRole.value = "";
+  ProjectRole.value = "2";
   CustomRoleName.value = "";
 };
 // 分页导航
