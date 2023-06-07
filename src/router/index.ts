@@ -67,15 +67,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "charts" */ '../views/charts.vue'),
             },
             {
-                path: '/form',
-                name: 'baseform',
-                meta: {
-                    title: '表单',
-                    permiss: '5',
-                },
-                component: () => import(/* webpackChunkName: "form" */ '../views/form.vue'),
-            },
-            {
                 path: '/tabs',
                 name: 'tabs',
                 meta: {
@@ -175,6 +166,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "login" */ '../views/login.vue'),
     },
     {
+        path: '/pingxingyun',
+        name: 'pingxingyun',
+        meta: {
+            title: '登录',
+        },
+        component: () => import(/* webpackChunkName: "login" */ '../views/pingxingyun.vue'),
+    },
+    {
         path: '/403',
         name: '403',
         meta: {
@@ -193,9 +192,12 @@ router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title} | 后台管理系统`;
     const role = localStorage.getItem('ms_username');
     const permiss = usePermissStore();
-    if (!role && to.path !== '/login') {
+    if(!role && to.path == '/pingxingyun'){
+        next()
+    }
+    else if (!role && to.path !== '/login') {
         next('/login');
-    } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
+    }else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
         // 如果没有权限，则进入403
         // next('/403');
         if(role=="admin")

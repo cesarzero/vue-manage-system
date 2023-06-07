@@ -28,13 +28,19 @@
 <!--						</el-image>-->
 <!--					</template>-->
 <!--				</el-table-column>-->
-        <el-table-column prop="address" label="云渲染链接" align="center">
-          <template #default="scope">
-            <el-button type="primary" :icon="ChromeFilled" @click="handleEdit(scope.$index, scope.row)">
-              打开链接
-            </el-button>
-          </template>
-        </el-table-column>
+          <el-table-column prop="project.link" label="外发链接" align="center">
+            <template #default="scope">
+              <a :href="scope.row.project.link" target="_blank">{{scope.row.project.link}}</a>
+            </template>
+          </el-table-column>
+
+<!--        <el-table-column prop="project.link" label="外发链接" align="center">-->
+<!--          <template #default="scope">-->
+<!--            <el-button type="primary" :icon="ChromeFilled" @click="handleEdit(scope.$index, scope.row)">-->
+<!--              打开链接-->
+<!--            </el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
 <!--				<el-table-column label="操作" width="220" align="center">-->
 <!--					<template #default="scope">-->
 <!--						<el-button text :icon="Edit" @click="handleEdit(scope.$index, scope.row)" v-permiss="15">-->
@@ -89,7 +95,9 @@ interface TableItem {
   project:{
     id:string,
     name:string,
-    address:string
+    address:string,
+    link:string,
+    number:string
   }
 }
 

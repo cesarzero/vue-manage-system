@@ -12,7 +12,8 @@
 			</div>
 			<el-table :data="ProjectData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
 				<el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-				<el-table-column prop="name" label="项目名称" align="center"></el-table-column>
+        <el-table-column prop="name" label="项目名称" align="center"></el-table-column>
+        <el-table-column prop="number" label="项目协议号" align="center"></el-table-column>
 <!--				<el-table-column label="账户余额">-->
 <!--					<template #default="scope">￥{{ scope.row.money }}</template>-->
 <!--				</el-table-column>-->
@@ -31,6 +32,11 @@
         <el-table-column prop="address" label="云渲染链接" align="center">
           <template #default="scope">
             <a :href="scope.row.address" target="_blank">{{scope.row.address}}</a>
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" label="外发链接" align="center">
+          <template #default="scope">
+            <a :href="scope.row.link" target="_blank">{{scope.row.link}}</a>
           </template>
         </el-table-column>
 				<el-table-column label="操作" width="220" align="center">
@@ -62,6 +68,9 @@
 				<el-form-item label="项目名称">
 					<el-input v-model="ProjectName" placeholder="请输入项目名称"></el-input>
 				</el-form-item>
+        <el-form-item label="项目编号">
+          <el-input v-model="ProjectNumber" placeholder="请输入项目协议号"></el-input>
+        </el-form-item>
         <el-form-item label="项目链接">
           <el-input v-model="ProjectLink" :placeholder="EditorTips"></el-input>
         </el-form-item>
@@ -86,7 +95,9 @@ import request from "../utils/request";
 interface ProjectItem {
   id:string
   name:string,
-  address:string
+  address:string,
+  number:string,
+  link:string
 }
 
 const query = reactive({
@@ -101,6 +112,7 @@ const EditorTitle = ref("")
 const EditorTips = ref("")
 const ProjectValue = ref('')
 const ProjectName = ref('')
+const ProjectNumber = ref('')
 const ProjectLink = ref('')
 const ProjectID = ref('')
 const isEditorCustom = ref(false)
@@ -185,7 +197,7 @@ const handleEdit = (index: number, row: any) => {
 const saveEdit = () => {
   if(EditorTitle.value=="编辑项目")
   {
-    request.post("/project/edit",{"id":ProjectID.value,"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("/project/edit",{"id":ProjectID.value,"name":ProjectName.value,"link":ProjectLink.value,"number":ProjectNumber.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
@@ -199,7 +211,7 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("/project/add",{"name":ProjectName.value,"link":ProjectLink.value})
+    request.post("/project/add",{"name":ProjectName.value,"link":ProjectLink.value,"number":ProjectNumber.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
