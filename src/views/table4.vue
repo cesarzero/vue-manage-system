@@ -111,7 +111,7 @@
 
 <script setup lang="ts" name="basetable">
 import { ref, reactive } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import {ElMessage, ElMessageBox, UploadProps, UploadUserFile} from 'element-plus';
 import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
 import { fetchData } from '../api/index';
 import request from "../utils/request";
