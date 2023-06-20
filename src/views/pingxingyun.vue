@@ -12,12 +12,18 @@
           </el-input>
         </div>
       <div id="box_button">
-          <el-button type="primary" style="width: 200px" @click="handleLogin">
+          <el-button type="primary" style="width: 90px" @click="handleLogin">
             登录
           </el-button>
+          <el-button type="primary" style="width: 90px" @click="handleLoginManage">
+            用户管理
+          </el-button>
       </div>
+
+
+
     </div>
-    <iframe :src="address" style="width: 100%;height: 100%" v-show="isLoginSuccess">
+    <iframe :src="address" style="position:absolute;width: 100%;height: 100%" v-show="isLoginSuccess">
     </iframe>
 	</div>
 </template>
@@ -66,6 +72,10 @@ const handleLogin = () => {
       ElMessage.error("登录失败");
     }
   });
+};
+
+const handleLoginManage = () => {
+  window.open("https://www.atchain.cn/CR/index.html")
 };
 
 </script>
