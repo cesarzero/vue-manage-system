@@ -45,6 +45,8 @@
         </el-table-column>
         <el-table-column label="账号级别" align="center" prop="role.name">
         </el-table-column>
+        <el-table-column label="所属公司" align="center" prop="company.name">
+        </el-table-column>
 				<el-table-column label="状态" align="center">
 					<template #default="scope">
 						<el-tag
@@ -108,6 +110,16 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="所属公司">
+          <el-select v-model="ProjectCompany" class="m-2" placeholder="请选择公司" size="large" style="width: 380px">
+            <el-option
+                v-for="item in CompanyData"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
 			</el-form>
 			<template #footer>
 				<span class="dialog-footer">
@@ -144,6 +156,10 @@ interface TableItem {
   role:{
     id:string,
     name:string
+  },
+  company:{
+    id:string,
+    name:string
   }
 }
 
@@ -167,12 +183,14 @@ const query = reactive({
 const tableData = ref<TableItem[]>([]);
 const ProjectData = ref<ProjectItem[]>([]);
 const RoleData = ref<RoleItem[]>([]);
+const CompanyData = ref<RoleItem[]>([]);
 const pageTotal = ref(0);
 const EditorTitle = ref("")
 const EditorTips = ref("")
 const ProjectValue = ref([])
 const SearchProject = ref([])
 const ProjectRole = ref('')
+const ProjectCompany = ref('')
 const CustomUserName = ref('')
 const CustomRoleName = ref('')
 const CustomUserId = ref('')
@@ -197,6 +215,11 @@ const getData = () => {
   .then((res) => {
     const data:any = res;
     RoleData.value = data.data.data;
+  });
+  request.get("/company/all",{})
+  .then((res) => {
+    const data:any = res;
+    CompanyData.value = data.data.data;
   });
 };
 getData();
@@ -294,7 +317,7 @@ const handleEdit = (index: number, row: any) => {
 const saveEdit = () => {
   if(EditorTitle.value=="编辑用户")
   {
-    request.post("/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"custom_id":CustomUserId.value})
+    request.post("/custom/edit",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"custom_id":CustomUserId.value,"company":ProjectCompany.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
@@ -308,7 +331,7 @@ const saveEdit = () => {
     });
   }else
   {
-    request.post("/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"role":ProjectRole.value})
+    request.post("/custom/add",{"username":CustomUserName.value,"password":CustomPassWord.value,"project_id":ProjectValue.value.toString(),"role":ProjectRole.value,"company":ProjectCompany.value})
     .then((res) => {
       const data:any = res;
       if(data.data.code == 200)
