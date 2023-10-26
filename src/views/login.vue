@@ -76,13 +76,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
           localStorage.setItem('ms_username', param.username);
           localStorage.setItem('Authorization', data.headers.authorization);
           let role  = "";
-          if(data.data.data == '项目管理员'){
+          if(data.data.data.role.name == '项目管理员'){
             role = 'manage';
-          }else if(data.data.data == '普通用户'){
+          }else if(data.data.data.role.name == '普通用户'){
             role = 'user';
           }else{
             role = 'admin';
           }
+		  console.log(role);
           const keys = permiss.defaultList[role];
           permiss.handleSet(keys);
           localStorage.setItem('ms_keys', JSON.stringify(keys));

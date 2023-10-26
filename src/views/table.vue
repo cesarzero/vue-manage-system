@@ -199,7 +199,7 @@ const isEditorCustom = ref(false)
 
 // 获取表格数据
 const getData = () => {
-  request.get("/custom/all",{})
+  request.get("/custom/all",{"username":localStorage.getItem('ms_username')})
   .then((res) => {
     const data:any = res;
     tableData.value = data.data.data;

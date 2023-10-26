@@ -200,14 +200,7 @@ router.beforeEach((to, from, next) => {
     }else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
         // 如果没有权限，则进入403
         // next('/403');
-        if(role=="admin")
-        {
-            next('/table')
-        }
-        else
-        {
-            next("/table3")
-        }
+        next()
     } else {
         next();
     }
