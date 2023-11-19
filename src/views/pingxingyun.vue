@@ -12,19 +12,25 @@
           </el-input>
         </div>
       <div id="box_button">
-          <el-button type="primary" style="width: 90px" @click="handleLogin">
-            登录
-          </el-button>
-          <el-button type="primary" style="width: 90px" @click="handleLoginManage">
+        <el-row>
+          <el-col :span="12">
+            <el-button type="primary" style="width: 90px;margin: 0 -45px;" @click="handleLogin">
+              登录
+            </el-button>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="primary" style="width: 90px;margin: 0 10px;" @click="handleLoginManage">
             用户管理
-          </el-button>
+            </el-button>
+          </el-col>
+        </el-row>
       </div>
 
 
 
     </div>
-    <iframe :src="address" style="position:absolute;width: 100%;height: 100%" v-show="isLoginSuccess">
-    </iframe>
+    <!-- <iframe :src="address" frameborder="0" scrolling="no" style="position:absolute;width: 100%;height: 100%" v-show="isLoginSuccess">
+    </iframe> -->
 	</div>
 </template>
 
@@ -68,6 +74,7 @@ const handleLogin = () => {
     {
       isLoginSuccess.value = true;
       address.value = data.data.data;
+      window.location.replace(address.value)
     }else{
       ElMessage.error("登录失败");
     }
@@ -89,6 +96,7 @@ const handleLoginManage = () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
   }
   #box_area{
     width: 30%;
@@ -105,5 +113,9 @@ const handleLoginManage = () => {
   #box_input{
     display: flex;
     flex-direction: column;
+  }
+
+  #box_button {
+    margin: 10px;
   }
 </style>
