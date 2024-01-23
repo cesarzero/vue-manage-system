@@ -42,6 +42,8 @@ import {reactive, ref} from "vue";
 import request from "../utils/request";
 import {ElMessage} from "element-plus";
 
+
+
 const isLoginSuccess = ref(false)
 const address = ref('')
 
@@ -51,8 +53,12 @@ const query = reactive({
   project:''
 });
 
+window.location.href = 'http://render.atchain.cn:28885'
+
 const url_code:any = useRoute().query.project;
 const url:any = Base64.decode(url_code)
+
+
 
 request.post("/project/get",{"project_number":url})
 .then((res) => {
